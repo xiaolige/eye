@@ -1,0 +1,85 @@
+ #创建表
+ java -jar liquibase.jar --driver=com.mysql.jdbc.Driver \
+     --classpath=/home/rmsdev/mysql-connector-java-5.1.35.jar \
+     --changeLogFile=liquibase_createtable.xml \
+     --url="jdbc:mysql://172.20.0.152/rms_dev" \
+     --username=rms_dev \
+     --password=handoracle \
+     update
+
+# tag
+ java -jar liquibase.jar --driver=com.mysql.jdbc.Driver \
+     --classpath=/home/rmsdev/mysql-connector-java-5.1.35.jar \
+     --changeLogFile=liquibase_createtable.xml \
+     --url="jdbc:mysql://172.20.0.152/rms_dev" \
+     --username=rms_dev \
+     --password=handoracle \
+     tag 2
+
+#rollback
+ java -jar liquibase.jar --driver=com.mysql.jdbc.Driver \
+     --classpath=/home/rmsdev/mysql-connector-java-5.1.35.jar \
+     --changeLogFile=liquibase_createtable.xml \
+     --url="jdbc:mysql://172.20.0.152/rms_dev" \
+     --username=rms_dev \
+     --password=handoracle \
+     rollback 1
+
+# 生成变更日志,会根据changeLogFile名产生一个日志文件, 时间较久
+# 根据当前数据库生成创建所有表、字段、主键、索引、视图等的变更集
+ java -jar liquibase.jar --driver=com.mysql.jdbc.Driver \
+     --classpath=/home/rmsdev/mysql-connector-java-5.1.35.jar \
+     --changeLogFile=changelog.xml \
+     --url="jdbc:mysql://172.20.0.152/rms_dev" \
+     --username=rms_dev \
+     --password=handoracle \
+     generateChangeLog   
+
+# 比对数据库差异
+# diff 模式(即report模式,标准输出(控制台)diff信息)
+ java -jar liquibase.jar --driver=com.mysql.jdbc.Driver \
+     --classpath=/home/rmsdev/mysql-connector-java-5.1.35.jar \
+     --url="jdbc:mysql://172.20.0.152/rms_dev" \
+     --username=rms_dev \
+     --password=handoracle \
+     diff \
+     --referenceUrl="jdbc:mysql://172.20.0.152/rms" \
+     --referenceUsername=rms \
+     --referencePassword=handprod1
+
+# ChangeLog 模式
+ java -jar liquibase.jar --driver=com.mysql.jdbc.Driver \
+     --classpath=/home/rmsdev/mysql-connector-java-5.1.35.jar \
+     --changeLogFile=changelog.xml\
+     --url="jdbc:mysql://172.20.0.152/rms_dev" \
+     --username=rms_dev \
+     --password=handoracle \
+     diffChangeLog \
+     --referenceUrl="jdbc:mysql://172.20.0.152/rms" \
+     --referenceUsername=rms \
+     --referencePassword=handprod1
+
+#标准输出一个changelog.xml文件内容,可以拷贝到xml文件作为变更日志执行
+# reference* 是base db, 前面的是 target db
+#以rms_dev为base db, 与 target db(rms)比对
+ java -jar liquibase.jar --driver=com.mysql.jdbc.Driver \
+     --classpath=/home/rmsdev/mysql-connector-java-5.1.35.jar \
+     --url="jdbc:mysql://172.20.0.152/rms" \
+     --username=rms \
+     --password=handprod1 \
+     diffChangeLog \
+     --referenceUrl="jdbc:mysql://172.20.0.152/rms_dev" \
+     --referenceUsername=rms_dev \
+     --referencePassword=handoracle
+
+#指定一个变更日志文件,如果该文件存在则把变更集追加到里面;不存在则创建新的变更日志文件
+ java -jar liquibase.jar --driver=com.mysql.jdbc.Driver \
+     --classpath=/home/rmsdev/mysql-connector-java-5.1.35.jar \
+     --changeLogFile=rmsdev_to_rms_20151105.xml \
+     --url="jdbc:mysql://172.20.0.152/rms" \
+     --username=rms \
+     --password=handprod1 \
+     diffChangeLog \
+     --referenceUrl="jdbc:mysql://172.20.0.152/rms_dev" \
+     --referenceUsername=rms_dev \
+     --referencePassword=handoracle     
